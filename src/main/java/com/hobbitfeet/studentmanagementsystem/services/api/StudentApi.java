@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface StudentApi {
     List<Student> getAllStudents();
+    Student createStudent(Student student);
 }
