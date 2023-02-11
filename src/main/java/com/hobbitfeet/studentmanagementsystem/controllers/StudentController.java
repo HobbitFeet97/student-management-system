@@ -5,10 +5,7 @@ import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/student")
@@ -27,6 +24,14 @@ public class StudentController {
     public ResponseEntity createNewStudent(@RequestBody Student newStudent) {
         try {
             return ResponseEntity.ok(studentApi.createStudent(newStudent));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    @PutMapping
+    public ResponseEntity updateExistingStudent(@RequestBody Student existingStudent) {
+        try {
+            return ResponseEntity.ok(studentApi.updateStudent(existingStudent));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

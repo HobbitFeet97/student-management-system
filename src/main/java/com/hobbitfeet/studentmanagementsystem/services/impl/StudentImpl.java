@@ -5,6 +5,7 @@ import com.hobbitfeet.studentmanagementsystem.repositories.StudentRepository;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,7 +32,20 @@ public class StudentImpl implements StudentApi {
          */
         LocalDateTime now = LocalDateTime.now();
         student.setCreatedOn(now);
-        student = studentRepository.save(student);
-        return student;
+        return studentRepository.save(student);
+    }
+
+    @Override
+    public Student updateStudent(Student student) {
+        /*
+        When updating a student, ensure updated on is set and
+        id is present
+         */
+        if (StringUtils.hasText(student.getId())) {
+            LocalDateTime now = LocalDateTime.now();
+            student.setUpdatedOn(now);
+            return studentRepository.save(student);
+        }
+        return null;
     }
 }
