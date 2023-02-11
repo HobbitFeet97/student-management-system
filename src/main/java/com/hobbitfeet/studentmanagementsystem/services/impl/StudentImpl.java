@@ -1,6 +1,7 @@
 package com.hobbitfeet.studentmanagementsystem.services.impl;
 
 import com.hobbitfeet.studentmanagementsystem.entities.Student;
+import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 import com.hobbitfeet.studentmanagementsystem.repositories.StudentRepository;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +37,23 @@ public class StudentImpl implements StudentApi {
     }
 
     @Override
-    public Student updateStudent(Student student) {
+    public Student updateStudent(Student student) throws ImproperUpdateRequestException {
         /*
         When updating a student, ensure updated on is set and
         id is present
          */
         if (StringUtils.hasText(student.getId())) {
-            LocalDateTime now = LocalDateTime.now();
-            student.setUpdatedOn(now);
-            return studentRepository.save(student);
+            if (studentExists(student.getId())) {
+                LocalDateTime now = LocalDateTime.now();
+                student.setUpdatedOn(now);
+                return studentRepository.save(student);
+            }
+            throw new ImproperUpdateRequestException(student.getId());
         }
-        return null;
+        throw new ImproperUpdateRequestException();
+    }
+
+    private boolean studentExists(String studentId) {
+        return studentRepository.findById(studentId).isPresent();
     }
 }
