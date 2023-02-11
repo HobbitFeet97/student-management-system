@@ -6,6 +6,7 @@ import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,5 +22,16 @@ public class StudentImpl implements StudentApi {
             response.add(student);
         }
         return response;
+    }
+
+    @Override
+    public Student createStudent(Student student) {
+        /*
+        When creating a student, ensure created on is set
+         */
+        LocalDateTime now = LocalDateTime.now();
+        student.setCreatedOn(now);
+        student = studentRepository.save(student);
+        return student;
     }
 }
