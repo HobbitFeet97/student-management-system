@@ -1,5 +1,6 @@
 package com.hobbitfeet.studentmanagementsystem.controllers;
 
+import com.hobbitfeet.studentmanagementsystem.components.api.ExceptionHandlerApi;
 import com.hobbitfeet.studentmanagementsystem.entities.Student;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +13,14 @@ import org.springframework.web.bind.annotation.*;
 public class StudentController {
     @Autowired
     StudentApi studentApi;
+    @Autowired
+    ExceptionHandlerApi exceptionHandlerApi;
     @GetMapping("/all")
     public ResponseEntity getAllStudents(){
         try {
             return ResponseEntity.ok(studentApi.getAllStudents());
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return exceptionHandlerApi.handleException(e);
         }
     }
     @PostMapping
@@ -25,7 +28,7 @@ public class StudentController {
         try {
             return ResponseEntity.ok(studentApi.createStudent(newStudent));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return exceptionHandlerApi.handleException(e);
         }
     }
     @PutMapping
@@ -33,7 +36,7 @@ public class StudentController {
         try {
             return ResponseEntity.ok(studentApi.updateStudent(existingStudent));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            return exceptionHandlerApi.handleException(e);
         }
     }
 }
