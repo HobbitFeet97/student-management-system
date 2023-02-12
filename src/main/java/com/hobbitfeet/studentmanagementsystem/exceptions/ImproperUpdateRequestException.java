@@ -1,12 +1,10 @@
 package com.hobbitfeet.studentmanagementsystem.exceptions;
 
-import com.hobbitfeet.studentmanagementsystem.enums.ExceptionMessages;
-
 public class ImproperUpdateRequestException extends Exception {
     public ImproperUpdateRequestException() {
-        super(ExceptionMessages.IMPROPER_UPDATE_REQUEST_GENERIC.value);
+        super("We cannot update this entity as it either does not exist, or no unique identifier was provided in the request.");
     }
     public ImproperUpdateRequestException(String id) {
-        super(String.format(ExceptionMessages.IMPROPER_UPDATE_REQUEST_NON_EXISTANT.value, id));
+        super(String.format("The entity associated with this id: %s does not exist.", id));
     }
 }

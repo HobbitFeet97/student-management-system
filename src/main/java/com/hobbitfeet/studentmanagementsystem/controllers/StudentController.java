@@ -23,6 +23,14 @@ public class StudentController {
             return exceptionHandlerApi.handleException(e);
         }
     }
+    @GetMapping("/{id}")
+    public ResponseEntity getStudent(@PathVariable(value = "id") String id){
+        try {
+            return ResponseEntity.ok(studentApi.getStudentById(id));
+        } catch (Exception e) {
+            return exceptionHandlerApi.handleException(e);
+        }
+    }
     @PostMapping
     public ResponseEntity createNewStudent(@RequestBody Student newStudent) {
         try {
@@ -35,6 +43,14 @@ public class StudentController {
     public ResponseEntity updateExistingStudent(@RequestBody Student existingStudent) {
         try {
             return ResponseEntity.ok(studentApi.updateStudent(existingStudent));
+        } catch (Exception e) {
+            return exceptionHandlerApi.handleException(e);
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteStudent(@PathVariable(value = "id") String id) {
+        try {
+            return ResponseEntity.ok(studentApi.deleteStudentById(id));
         } catch (Exception e) {
             return exceptionHandlerApi.handleException(e);
         }

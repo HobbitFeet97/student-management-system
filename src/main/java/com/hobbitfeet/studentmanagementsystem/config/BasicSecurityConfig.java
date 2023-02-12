@@ -2,6 +2,7 @@ package com.hobbitfeet.studentmanagementsystem.config;
 
 import com.hobbitfeet.studentmanagementsystem.components.impl.BasicAuthEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,12 @@ public class BasicSecurityConfig {
     @Autowired
     BasicAuthEntryPoint entryPoint;
 
+    @Value("${auth.username}")
+    String username;
+
+    @Value("${auth.password}")
+    String password;
+
     @Bean
     public PasswordEncoder encoder(){
         return new BCryptPasswordEncoder();
@@ -26,8 +33,8 @@ public class BasicSecurityConfig {
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails user1 = User.builder()
-                .username("AJ")
-                .password(encoder().encode("aPassword"))
+                .username(username)
+                .password(encoder().encode(password))
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user1);
