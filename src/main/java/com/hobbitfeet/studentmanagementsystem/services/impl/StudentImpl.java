@@ -1,6 +1,7 @@
 package com.hobbitfeet.studentmanagementsystem.services.impl;
 
 import com.hobbitfeet.studentmanagementsystem.entities.Student;
+import com.hobbitfeet.studentmanagementsystem.exceptions.EntityNotFoundException;
 import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 import com.hobbitfeet.studentmanagementsystem.repositories.StudentRepository;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentImpl implements StudentApi {
@@ -51,6 +53,24 @@ public class StudentImpl implements StudentApi {
             throw new ImproperUpdateRequestException(student.getId());
         }
         throw new ImproperUpdateRequestException();
+    }
+
+    @Override
+    public Student getStudentById(String id) throws EntityNotFoundException {
+        Optional<Student> student = studentRepository.findById(id);
+        if (student.isPresent()) {
+            return student.get();
+        }
+        throw new EntityNotFoundException(id);
+    }
+
+    @Override
+    public String deleteStudentById(String id) throws EntityNotFoundException {
+        if (studentExists(id)) {
+            studentRepository.deleteById(id);
+            return id;
+        }
+        throw new EntityNotFoundException(id);
     }
 
     private boolean studentExists(String studentId) {
