@@ -1,40 +1,44 @@
 package com.hobbitfeet.studentmanagementsystem.components.impl;
 
 import com.hobbitfeet.studentmanagementsystem.components.api.ExceptionHandlerApi;
-import com.hobbitfeet.studentmanagementsystem.enums.ExceptionMessages;
+import com.hobbitfeet.studentmanagementsystem.constants.ExceptionConstants;
 import com.hobbitfeet.studentmanagementsystem.models.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 
 import java.time.LocalDateTime;
 
 @Component
 public class ExceptionHandlerImpl implements ExceptionHandlerApi {
 
+    private static ResponseEntity<ErrorResponse> responseBuilder(Exception e) {
+        ErrorResponse error = exceptionBuilder(e);
+        return ResponseEntity.status(error.getErrorCode()).body(error);
+    }
+
+    private static ErrorResponse exceptionBuilder(Exception e) {
+        HttpStatus mappedStatus = ExceptionConstants.MAP.get(e.getClass());
+        if (mappedStatus != null) {
+            return ErrorResponse.builder()
+                    .errorCode(mappedStatus.value())
+                    .errorMessage(e.getMessage())
+                    .errorDateTime(LocalDateTime.now())
+                    .build();
+        }
+        return defaultResponse();
+    }
+
+    private static ErrorResponse defaultResponse() {
+        return ErrorResponse.builder()
+                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .errorMessage(ExceptionConstants.INTERNAL_SERVER_ERROR_MESSAGE)
+                .errorDateTime(LocalDateTime.now())
+                .build();
+    }
+
     @Override
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         return responseBuilder(e);
-    }
-
-    private static ResponseEntity<ErrorResponse> responseBuilder(Exception e) {
-        if (e.getClass().equals(ImproperUpdateRequestException.class)) {
-            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(
-                    ErrorResponse.builder()
-                            .errorCode(HttpStatus.NOT_ACCEPTABLE.value())
-                            .errorMessage(e.getMessage())
-                            .errorDateTime(LocalDateTime.now())
-                            .build()
-            );
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    ErrorResponse.builder()
-                            .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                            .errorMessage(ExceptionMessages.INTERNAL_SERVER_ERROR_GENERIC.value)
-                            .errorDateTime(LocalDateTime.now())
-                            .build()
-            );
-        }
     }
 }
