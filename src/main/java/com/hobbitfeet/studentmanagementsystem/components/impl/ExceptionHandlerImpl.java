@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class ExceptionHandlerImpl implements ExceptionHandlerApi {
@@ -18,12 +21,12 @@ public class ExceptionHandlerImpl implements ExceptionHandlerApi {
     }
 
     private static ErrorResponse exceptionBuilder(Exception e) {
-        HttpStatus mappedStatus = ExceptionConstants.MAP.get(e.getClass());
+        HttpStatus mappedStatus = retrieveStatus(e);
         if (mappedStatus != null) {
             return ErrorResponse.builder()
                     .errorCode(mappedStatus.value())
                     .errorMessage(e.getMessage())
-                    .errorDateTime(LocalDateTime.now())
+                    .errorDateTime(LocalDateTime.now().toString())
                     .build();
         }
         return defaultResponse();
@@ -33,8 +36,15 @@ public class ExceptionHandlerImpl implements ExceptionHandlerApi {
         return ErrorResponse.builder()
                 .errorCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .errorMessage(ExceptionConstants.INTERNAL_SERVER_ERROR_MESSAGE)
-                .errorDateTime(LocalDateTime.now())
+                .errorDateTime(LocalDateTime.now().toString())
                 .build();
+    }
+
+    private static HttpStatus retrieveStatus(Exception e) {
+        Optional<Map.Entry<HttpStatus, List<Class>>> status = ExceptionConstants.MAP.entrySet()
+                .stream().filter(httpStatusListEntry -> httpStatusListEntry.getValue().contains(e.getClass()))
+                .findFirst();
+        return status.isPresent() ? status.get().getKey() : null;
     }
 
     @Override
