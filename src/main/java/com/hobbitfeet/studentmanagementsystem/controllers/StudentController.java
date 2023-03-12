@@ -1,58 +1,45 @@
 package com.hobbitfeet.studentmanagementsystem.controllers;
 
-import com.hobbitfeet.studentmanagementsystem.components.api.ExceptionHandlerApi;
 import com.hobbitfeet.studentmanagementsystem.entities.Student;
+import com.hobbitfeet.studentmanagementsystem.exceptions.EntityNotFoundException;
+import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@RequiredArgsConstructor
 @Controller
 @RequestMapping("/student")
 public class StudentController {
-    @Autowired
-    StudentApi studentApi;
-    @Autowired
-    ExceptionHandlerApi exceptionHandlerApi;
+
+    private final StudentApi studentApi;
+
     @GetMapping("/all")
-    public ResponseEntity getAllStudents(){
-        try {
-            return ResponseEntity.ok(studentApi.getAllStudents());
-        } catch (Exception e) {
-            return exceptionHandlerApi.handleException(e);
-        }
+    public ResponseEntity<List<Student>> getAllStudents() {
+        return ResponseEntity.ok(studentApi.getAllStudents());
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity getStudent(@PathVariable(value = "id") String id){
-        try {
-            return ResponseEntity.ok(studentApi.getStudentById(id));
-        } catch (Exception e) {
-            return exceptionHandlerApi.handleException(e);
-        }
+    public ResponseEntity<Student> getStudentById(@PathVariable(value = "id") String id) throws EntityNotFoundException {
+        return ResponseEntity.ok(studentApi.getStudentById(id));
     }
+
     @PostMapping
-    public ResponseEntity createNewStudent(@RequestBody Student newStudent) {
-        try {
-            return ResponseEntity.ok(studentApi.createStudent(newStudent));
-        } catch (Exception e) {
-            return exceptionHandlerApi.handleException(e);
-        }
+    public ResponseEntity<Student> createNewStudent(@RequestBody Student newStudent) {
+        return ResponseEntity.ok(studentApi.createStudent(newStudent));
     }
+
     @PutMapping
-    public ResponseEntity updateExistingStudent(@RequestBody Student existingStudent) {
-        try {
-            return ResponseEntity.ok(studentApi.updateStudent(existingStudent));
-        } catch (Exception e) {
-            return exceptionHandlerApi.handleException(e);
-        }
+    public ResponseEntity<Student> updateExistingStudent(@RequestBody Student existingStudent) throws ImproperUpdateRequestException {
+        return ResponseEntity.ok(studentApi.updateStudent(existingStudent));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteStudent(@PathVariable(value = "id") String id) {
-        try {
-            return ResponseEntity.ok(studentApi.deleteStudentById(id));
-        } catch (Exception e) {
-            return exceptionHandlerApi.handleException(e);
-        }
+    public ResponseEntity<String> deleteStudentById(@PathVariable(value = "id") String id) throws EntityNotFoundException {
+        return ResponseEntity.ok(studentApi.deleteStudentById(id));
     }
 }

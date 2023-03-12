@@ -1,6 +1,6 @@
 package com.hobbitfeet.studentmanagementsystem.exceptions;
 
-public class ImproperUpdateRequestException extends Exception {
+public class ImproperUpdateRequestException extends RuntimeException {
     public ImproperUpdateRequestException() {
         super("We cannot update this entity as it either does not exist, or no unique identifier was provided in the request.");
     }

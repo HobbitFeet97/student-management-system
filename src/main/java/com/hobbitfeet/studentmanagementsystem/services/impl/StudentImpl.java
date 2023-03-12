@@ -5,7 +5,7 @@ import com.hobbitfeet.studentmanagementsystem.exceptions.EntityNotFoundException
 import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 import com.hobbitfeet.studentmanagementsystem.repositories.StudentRepository;
 import com.hobbitfeet.studentmanagementsystem.services.api.StudentApi;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 @Service
 public class StudentImpl implements StudentApi {
-    @Autowired
-    StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
     @Override
     public List<Student> getAllStudents() {
         Iterable<Student> students = studentRepository.findAll();

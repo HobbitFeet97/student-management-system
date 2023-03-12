@@ -1,19 +1,23 @@
-package com.hobbitfeet.studentmanagementsystem.components.impl;
+package com.hobbitfeet.studentmanagementsystem.advice;
 
-import com.hobbitfeet.studentmanagementsystem.components.api.ExceptionHandlerApi;
 import com.hobbitfeet.studentmanagementsystem.constants.ExceptionConstants;
+import com.hobbitfeet.studentmanagementsystem.exceptions.EntityNotFoundException;
+import com.hobbitfeet.studentmanagementsystem.exceptions.ImproperUpdateRequestException;
 import com.hobbitfeet.studentmanagementsystem.models.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Component
-public class ExceptionHandlerImpl implements ExceptionHandlerApi {
+@Slf4j
+@ControllerAdvice
+public class ExceptionHandlerAdvice {
 
     private static ResponseEntity<ErrorResponse> responseBuilder(Exception e) {
         ErrorResponse error = exceptionBuilder(e);
@@ -41,13 +45,18 @@ public class ExceptionHandlerImpl implements ExceptionHandlerApi {
     }
 
     private static HttpStatus retrieveStatus(Exception e) {
-        Optional<Map.Entry<HttpStatus, List<Class>>> status = ExceptionConstants.MAP.entrySet()
+        Optional<Map.Entry<HttpStatus, List<Object>>> status = ExceptionConstants.MAP.entrySet()
                 .stream().filter(httpStatusListEntry -> httpStatusListEntry.getValue().contains(e.getClass()))
                 .findFirst();
         return status.isPresent() ? status.get().getKey() : null;
     }
 
-    @Override
+    @ExceptionHandler(
+            {
+                    ImproperUpdateRequestException.class,
+                    EntityNotFoundException.class
+            }
+    )
     public ResponseEntity<ErrorResponse> handleException(Exception e) {
         return responseBuilder(e);
     }
